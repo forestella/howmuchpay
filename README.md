@@ -15,5 +15,23 @@
 - **Deployment**: Vercel
 - **Data**: Static JSON (stats.json)
 
-## 4. 데이터 출처
+## 4. 디자인 가이드 (Minimalist UI)
+모바일에서 '봉투 적기 전 30초' 만에 끝내는 UX를 지향합니다.
+
+### 레이아웃
+- **SPA (Single Page Application)**: 100% 한 페이지 구성.
+- **No Scroll**: 스크롤 없이 모든 버튼이 한 화면에 보이도록 설계.
+
+### 스타일
+- **Color Palette**:
+  - Background: White (`#FFFFFF`)
+  - Primary: Deep Navy (`#1A2B4B`) - 신뢰감
+  - Point: Green (`#28A745`) - 적정함 (신호등)
+- **Typography**: 권장 금액은 **48px 이상 볼드체**로 강조.
+- **Component**: 텍스트 입력 없이 **큰 버튼(Card)** 탭 방식.
+
+### 배너
+- 하단 뱃지: "대한민국 소비자원 2026.01.30 공식 데이터 기반"
+
+## 5. 데이터 출처
 - 한국소비자원 '결혼서비스 가격 동향' (2026.01.30 기준)
