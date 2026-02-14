@@ -71,40 +71,40 @@ function Calculator() {
             recommended = STEPS.find(s => s >= target) || STEPS[STEPS.length - 1];
         }
 
-        // 2. 메시지 선정 로직 (우선순위: 식장/식사 -> 관계)
+        // 2. 메시지 선정 로직 (감성/상황 중심)
 
-        // Case 7. 프리미엄 호텔 (최우선)
+        // Case 6. 호텔/프리미엄 웨딩 (최우선)
         if (venueType === 'hotel') {
-            message.title = "장소의 격에 맞는 센스 있는 선택";
-            message.desc = "이곳은 식대가 일반적인 수준을 훨씬 상회합니다. 호스트의 부담을 덜어주는 당신은 정말 배려 깊은 하객입니다.";
+            message.title = "장소의 격식에 맞춘 세심한 배려";
+            message.desc = "신랑/신부가 기분 좋게 손님을 맞이할 수 있는 기준입니다. 호스트의 부담을 덜어주는 당신은 센스 있는 하객입니다.";
         }
-        // Case 2. 불참/식사 안 함
+        // Case 4. 식사 없이 마음만 (불참/식사 안 함)
         else if (mealType !== 'yes') {
-            message.title = "부담은 덜고 마음은 전하고";
-            message.desc = "식대 지출이 없으므로, 서로 주고받기에 가장 깔끔하고 뒷말 없는 표준 금액입니다.";
+            message.title = "자리를 비우는 미안함 대신 정성을!";
+            message.desc = "식대 지출이 없음을 고려해 합리적으로 산출했습니다. 봉투만 전달하더라도 충분히 센스 있는 하객이 되실 거예요.";
         }
         // 관계별 메시지
         else {
             switch (relationship) {
-                case 'acquaintance': // 그냥 아는 사이
-                    message.title = "멀어지지 않는 적당한 거리감";
-                    message.desc = "밥값 때문에 미안해할 필요 없습니다. 통계적 식대를 기준으로 실례되지 않을 최소한의 예의를 담았습니다.";
+                case 'acquaintance': // Case 2. 평범한 지인
+                    message.title = "서로 부담 없는 깔끔한 예의";
+                    message.desc = "하객으로서의 도리를 다하는 가장 표준적인 선택입니다.";
                     break;
-                case 'colleague': // 직장 동료
-                    message.title = "사무실 매너와 예의를 동시에!";
-                    message.desc = "식장 평균 식대를 방어하면서, 월요일 출근길이 어색하지 않을 딱 적당한 사회생활용 금액입니다.";
+                case 'colleague': // Case 3. 직장 동료
+                    message.title = "월요일 출근길이 가벼워지는 센스!";
+                    message.desc = "조직의 분위기와 최근 물가 흐름을 고려한 적정선입니다.";
                     break;
-                case 'friend': // 친구/모임
-                    message.title = "함께해서 더 즐거운 축하";
-                    message.desc = "모임의 평균적인 분위기를 해치지 않으면서, 하객으로서 1인분 몫을 충분히 하는 금액입니다.";
+                case 'friend': // Case 5. 맛있게 식사 (친구/모임)
+                    message.title = "초대해 준 정성에 보답하는 한 끼";
+                    message.desc = "최근 예식장 환경을 반영해 실례가 되지 않는 금액입니다.";
                     break;
-                case 'close': // 친한 친구/은사님
-                    message.title = "돈보다 깊은 우리 우정!";
-                    message.desc = "식대 계산을 넘어, 인생의 소중한 순간을 함께 축하하는 진심이 담긴 금액입니다.";
+                case 'close': // Case 1. 끈끈한 의리파
+                    message.title = "금액보다 앞선 우리의 시간!";
+                    message.desc = "밥값 걱정 없이 가장 축복하는 마음을 담았습니다.";
                     break;
-                case 'family': // 가족/베프
-                    message.title = "가족의 새로운 시작을 위해";
-                    message.desc = "일반 하객과는 다른, 끈끈한 유대감과 축복의 의미를 담아 넉넉하게 산출했습니다.";
+                case 'family': // Case 8. 가족/친척
+                    message.title = "가문의 경사를 축하하며!";
+                    message.desc = "일반 하객과는 다른 끈끈한 유대감과 축복의 무게를 실었습니다.";
                     break;
             }
         }
@@ -126,25 +126,22 @@ function Calculator() {
 
         const shareUrl = `${window.location.origin}?${params.toString()}`;
 
-        // 랜덤 공유 멘트
+        // 랜덤 공유 멘트 (사용자 요청 3종)
         const shareMentions = [
-            "나 방금 '얼마낼까'로 축의금 정함. 너도 이거 보고 가라. (내 우정 점수 00점)",
-            "호텔 결혼식 가는데 식대 얼마인지 몰라서 쫄았음; 여기서 계산해보니 답 나오네.",
-            `소비자원 통계로 돌려보니 나는 ${result?.amount.toLocaleString()}원 나옴. 넌 얼마 낼 거임?`
+            "아직도 축의금 5만원 내니? 2026년 국룰 계산기 돌려봐라.",
+            `소비자원 데이터로 뽑아본 내 적정 축의금은 ${result?.amount.toLocaleString()}원! 너는 얼마 나와?`,
+            "결혼식 갈 때마다 고민되는 축의금, 여기서 10초 만에 종결함."
         ];
         const randomText = shareMentions[Math.floor(Math.random() * shareMentions.length)];
+        const fullText = `${randomText}\n${shareUrl}`;
 
-        if (navigator.share) {
-            navigator.share({
-                title: '얼마낼까 - 2026년 국룰 축의금 계산기',
-                text: randomText,
-                url: shareUrl,
-            });
-        } else {
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                alert('결과 링크가 복사되었습니다!');
-            });
-        }
+        // 가장 확실한 클립보드 복사 + 안내 방식 사용
+        navigator.clipboard.writeText(fullText).then(() => {
+            alert('공유 문구가 복사되었습니다!\n카카오톡 채팅방에 "붙여넣기" 해주세요.');
+        }).catch(() => {
+            // 클립보드 권한 이슈 등으로 실패 시 URL만이라도 시도 (fallback)
+            prompt('아이쿠, 복사에 실패했습니다. 아래 링크를 직접 복사해 주세요!', fullText);
+        });
     };
 
     const isComplete = !!result;
@@ -234,14 +231,13 @@ function Calculator() {
 
             <footer className="footer">
                 <div className="badge-container">
-                    <span className="badge-text">대한민국 소비자원 2026.01.30 공식 데이터 기반</span>
+                    <span className="badge-text">2026년 웨딩 물가 및 지역별 평균 식대 기준</span>
                 </div>
                 <div className="disclaimer">
-                    <p><strong>[확인해 주세요!]</strong></p>
-                    <p>본 서비스는 한국소비자원 '참가격' 서비스의 지역별 외식비 통계 및 웨딩 업계 평균 식대를 기초로 산출합니다.</p>
-                    <p>실제 예식장의 메뉴(코스 vs 뷔페)나 요일(주말 vs 평일)에 따라 식대는 최대 30% 이상 차이 날 수 있습니다.</p>
-                    <p>본 결과는 참고용이며, 개인 간의 친밀도나 경제적 상황에 따른 최종 판단의 책임은 사용자에게 있습니다.</p>
-                    <p>데이터는 매 분기 업데이트되나, 급격한 물가 변동이 즉각 반영되지 않을 수 있습니다.</p>
+                    <p><strong>[알려드립니다]</strong></p>
+                    <p>본 결과는 최근 물가 트렌드와 지역별 평균 식대를 참고하여 제안하는 '가이드라인'일 뿐입니다.</p>
+                    <p>축의금은 개인의 경제 상황이나 신랑/신부와의 특별한 사연에 따라 얼마든지 달라질 수 있습니다.</p>
+                    <p>본인의 마음이 가장 편안한 금액이 정답이며, 최종 결정의 책임은 사용자에게 있습니다.</p>
                 </div>
             </footer>
 
