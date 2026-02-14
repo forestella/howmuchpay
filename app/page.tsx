@@ -1,22 +1,38 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import stats from '@/data/stats.json';
 
 // --- Types ---
 type RegionId = string;
-type MealType = 'yes' | 'no' | 'n/a'; // 식사함, 식사안함(답례품), 불참
+type MealType = 'yes' | 'no' | 'n/a';
 type Relationship = 'acquaintance' | 'friend' | 'close';
 type VenueType = 'hall' | 'hotel';
 
 const STEPS = [30000, 50000, 70000, 100000, 150000, 200000, 300000, 500000];
 
-export default function Home() {
+function Calculator() {
+    const searchParams = useSearchParams();
+
     // --- State ---
     const [regionId, setRegionId] = useState<RegionId | null>(null);
     const [mealType, setMealType] = useState<MealType | null>(null);
     const [relationship, setRelationship] = useState<Relationship | null>(null);
     const [venueType, setVenueType] = useState<VenueType | null>(null);
+
+    // --- Init from URL ---
+    useEffect(() => {
+        const r = searchParams.get('r');
+        const m = searchParams.get('m') as MealType;
+        const l = searchParams.get('l') as Relationship;
+        const v = searchParams.get('v') as VenueType;
+
+        if (r) setRegionId(r);
+        if (m) setMealType(m);
+        if (l) setRelationship(l);
+        if (v) setVenueType(v);
+    }, [searchParams]);
 
     // --- Logic ---
     const result = useMemo(() => {
@@ -27,40 +43,24 @@ export default function Home() {
 
         let baseMealCost = regionData.avgMealCost;
 
-        // 호텔이면 1.5배 적용 (대략적 추정)
         if (venueType === 'hotel') {
             baseMealCost = Math.round(baseMealCost * 1.5);
         }
 
-        // 기본 축의금 로직
         let recommended = 0;
         let explanation = '';
 
-        // 상황별 로직
         if (mealType === 'n/a') {
-            // 불참: 기본 5만, 친하면 10만
             if (relationship === 'close') recommended = 100000;
             else recommended = 50000;
             explanation = '불참 시에는 기본 예의 표시로 50,000원이 적당하며, 가까운 사이라면 100,000원을 추천합니다.';
         } else {
-            // 참석 (식사 함/안함)
-            // 식사를 안 하더라도 참석하면 식대 + @를 고려하는 것이 관례 (답례품 비용 등)
-            // 식사 함: 식대를 커버하는 것이 기본 예의
-
-            const minAmountByMeal = baseMealCost + 10000; // 식대 + 1만원
-
-            // 한국 사회 통념상 5, 10, 15 단위 (7은 애매하지만 가끔 사용)
-            // 식대가 9만 -> 10만.
-            // 식대가 5.5만 -> 7만? or 10만? -> 10만 추천 (여유있게)
-
+            const minAmountByMeal = baseMealCost + 10000;
             let target = minAmountByMeal;
 
-            // 친밀도 보정
             if (relationship === 'friend') target += 30000;
             if (relationship === 'close') target += 50000;
 
-            // 가장 가까운 스텝 찾기 (단, 식대보다는 커야 함)
-            // 예: 식대 9만 -> target 10만. 5, 7, 10 중 10.
             recommended = STEPS.find(s => s >= target) || STEPS[STEPS.length - 1];
 
             explanation = `선택하신 ${regionData.name} 지역의 평균 식대(약 ${(baseMealCost / 10000).toFixed(1)}만원)를 고려하여 산출되었습니다.`;
@@ -75,14 +75,25 @@ export default function Home() {
 
     // --- Handlers ---
     const handleShare = () => {
+        // 쿼리 파라미터 생성
+        const params = new URLSearchParams();
+        if (regionId) params.set('r', regionId);
+        if (venueType) params.set('v', venueType);
+        if (mealType) params.set('m', mealType);
+        if (relationship) params.set('l', relationship);
+
+        const shareUrl = `${window.location.origin}?${params.toString()}`;
+
         if (navigator.share) {
             navigator.share({
                 title: '얼마낼까 - 축의금 계산기',
                 text: `내 추천 축의금은 ${result?.amount.toLocaleString()}원입니다!`,
-                url: window.location.href,
+                url: shareUrl,
             });
         } else {
-            alert('공유 기능을 지원하지 않는 브라우저입니다.');
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('결과 링크가 복사되었습니다!');
+            });
         }
     };
 
@@ -96,7 +107,6 @@ export default function Home() {
             </header>
 
             <div className="calculator-form">
-                {/* 1. 지역 선택 */}
                 <section className="section">
                     <h2 className="section-title">어디서 결혼하나요?</h2>
                     <div className="grid-buttons">
@@ -112,7 +122,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* 2. 식장 유형 */}
                 <section className="section">
                     <h2 className="section-title">어떤 식장인가요?</h2>
                     <div className="grid-buttons col-2">
@@ -131,7 +140,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* 3. 식사 여부 */}
                 <section className="section">
                     <h2 className="section-title">식사는 하시나요?</h2>
                     <div className="grid-buttons col-3">
@@ -141,7 +149,6 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* 4. 친밀도 */}
                 <section className="section">
                     <h2 className="section-title">얼마나 친한가요?</h2>
                     <div className="grid-buttons col-3">
@@ -152,7 +159,6 @@ export default function Home() {
                 </section>
             </div>
 
-            {/* 결과 대시보드 */}
             {isComplete && (
                 <div className="result-dashboard">
                     <div className="result-card">
@@ -173,7 +179,6 @@ export default function Home() {
                 <span className="badge-text">대한민국 소비자원 2026.01.30 공식 데이터 기반</span>
             </footer>
 
-            {/* Styles (Inline for MVP simplicity, consistent with globals.css) */}
             <style jsx>{`
         .container {
           max-width: 600px;
@@ -283,7 +288,7 @@ export default function Home() {
         .share-button {
           width: 100%;
           padding: 16px;
-          background: #FAE100; /* Kakao Yellow */
+          background: #FAE100;
           color: #3C1E1E;
           font-weight: 700;
           border-radius: 12px;
@@ -305,5 +310,13 @@ export default function Home() {
         }
       `}</style>
         </div>
+    );
+}
+
+export default function Home() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <Calculator />
+        </Suspense>
     );
 }
