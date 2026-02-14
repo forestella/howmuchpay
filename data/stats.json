@@ -1,0 +1,33 @@
+{
+    "meta": {
+        "source": "한국소비자원 '결혼서비스 가격 동향' (2026.01.30)",
+        "updatedAt": "2026-02-14"
+    },
+    "regions": [
+        {
+            "id": "seoul_gangnam",
+            "name": "서울(강남)",
+            "avgMealCost": 90000
+        },
+        {
+            "id": "seoul_other",
+            "name": "서울(그 외)",
+            "avgMealCost": 70000
+        },
+        {
+            "id": "gyeonggi_incheon",
+            "name": "경기/인천",
+            "avgMealCost": 65000
+        },
+        {
+            "id": "metropolitan",
+            "name": "광역시",
+            "avgMealCost": 60000
+        },
+        {
+            "id": "other",
+            "name": "그 외 지역",
+            "avgMealCost": 55000
+        }
+    ]
+}

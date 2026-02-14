@@ -1,0 +1,33 @@
+:root {
+  --primary-color: #1A2B4B;
+  --point-color: #28A745;
+  --bg-color: #FFFFFF;
+  --text-color: #333333;
+  --gray-100: #F8F9FA;
+  --gray-200: #E9ECEF;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}

@@ -3,6 +3,12 @@
 /.pnp
 .pnp.js
 
+# Python
+venv/
+__pycache__/
+*.pyc
+
+
 # Testing
 /coverage
 
